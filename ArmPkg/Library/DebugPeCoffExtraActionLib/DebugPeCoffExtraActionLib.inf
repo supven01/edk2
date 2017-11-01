@@ -33,7 +33,14 @@
   DebugPeCoffExtraActionLib.c
 
 [Packages]
+  ArmPkg/ArmPkg.dec
   MdePkg/MdePkg.dec
+  StandaloneMmPkg/StandaloneMmPkg.dec
+
+[FeaturePcd]
+  gStandaloneMmPkgTokenSpaceGuid.PcdStandaloneMmEnable
 
 [LibraryClasses]
+  ArmMmuLib
   DebugLib
+  PcdLib
