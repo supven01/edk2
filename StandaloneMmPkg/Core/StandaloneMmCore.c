@@ -95,6 +95,15 @@ EFI_MM_SYSTEM_TABLE  gMmCoreMmst = {
 //
 BOOLEAN  mInLegacyBoot = FALSE;
 
+EFI_STATUS
+EFIAPI
+MmCommTestHandler (
+  IN     EFI_HANDLE               DispatchHandle,
+  IN     CONST VOID               *Context,        OPTIONAL
+  IN OUT VOID                     *CommBuffer,     OPTIONAL
+  IN OUT UINTN                    *CommBufferSize  OPTIONAL
+  );
+
 //
 // Table of MMI Handlers that are registered by the MM Core when it is initialized
 //
@@ -106,6 +115,7 @@ MM_CORE_MMI_HANDLERS  mMmCoreMmiHandlers[] = {
   { MmLegacyBootHandler,     &gEfiEventLegacyBootGuid,           NULL, FALSE },
   { MmExitBootServiceHandler,&gEfiEventExitBootServicesGuid,     NULL, FALSE },
   { MmReadyToBootHandler,    &gEfiEventReadyToBootGuid,          NULL, FALSE },
+  { MmCommTestHandler,       &gMmCommTestGuid,                   NULL, TRUE  },
   { NULL,                    NULL,                               NULL, FALSE },
 };
 
@@ -379,7 +389,36 @@ MmEndOfDxeHandler (
   return Status;
 }
 
+/**
+  This function is the main entry point for communicate-based callback.
 
+  @param  DispatchHandle  The unique handle assigned to this handler by MmiHandlerRegister().
+  @param  Context         Points to an optional handler context which was specified when the handler was registered.
+  @param  CommBuffer      A pointer to a collection of data in memory that will
+                          be conveyed from a non-MM environment into an MM environment.
+  @param  CommBufferSize  The size of the CommBuffer.
+
+  @return Status Code
+**/
+EFI_STATUS
+EFIAPI
+MmCommTestHandler (
+  IN     EFI_HANDLE               DispatchHandle,
+  IN     CONST VOID               *Context,        OPTIONAL
+  IN OUT VOID                     *CommBuffer,     OPTIONAL
+  IN OUT UINTN                    *CommBufferSize  OPTIONAL
+  )
+{
+  EFI_SYSTEM_TABLE                      SystemTable;
+
+  DEBUG ((DEBUG_INFO, "MmUefiInfoHandler\n"));
+
+  CopyMem (&SystemTable, CommBuffer, sizeof(EFI_SYSTEM_TABLE));
+
+  DEBUG ((DEBUG_INFO, "  UEFI Firmware Version - 0x%x\n", SystemTable.FirmwareRevision));
+
+  return EFI_SUCCESS;
+}
 
 /**
   The main entry point to MM Foundation.
